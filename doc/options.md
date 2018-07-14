@@ -9,29 +9,29 @@ StaticBuilder offers a handful of options so that you can tweak the result, depe
 
 ```php
 c::set([
-    // Extension is disabled by default!
-    'staticbuilder' => false,
+  // Extension is disabled by default!
+  'staticbuilder' => false,
 
-    // Pages will we written to: [project_root]/[outputdir]/[page_url][extension]
-    // Example with default settings: [project_root]/static/parent-page/child-page/index.html
-    'staticbuilder.outputdir' => 'static',
-    'staticbuilder.extension' => '/index.html',
+  // Pages will we written to: [project_root]/[outputdir]/[page_url][extension]
+  // Example with default settings: [project_root]/static/parent-page/child-page/index.html
+  'staticbuilder.outputdir' => 'static',
+  'staticbuilder.extension' => '/index.html',
 
-    // Lets you provide an absolute base URL, such as '/' or 'https//domain.tld/'
-    // If false, we will try to write relative URLs instead
-    'staticbuilder.baseurl' => false,
+  // Lets you provide an absolute base URL, such as '/' or 'https//domain.tld/'
+  // If false, we will try to write relative URLs instead
+  'staticbuilder.baseurl' => false,
 
-    // Should we add the extension to URLs in the HTML?
-    'staticbuilder.uglyurls' => false,
+  // Should we add the extension to URLs in the HTML?
+  'staticbuilder.uglyurls' => false,
 
-    // Files and folders to copy into the static build folder
-    'staticbuilder.assets' => ['assets', 'content', 'thumbs'],
+  // Files and folders to copy into the static build folder
+  'staticbuilder.assets' => ['assets', 'content', 'thumbs'],
 
-    // Lets you provide a function for including/excluding pages
-    'staticbuilder.filter' => null,
+  // Lets you provide a function for including/excluding pages
+  'staticbuilder.filter' => null,
 
-    // Do not copy files from the page's content folder
-    'staticbuilder.withfiles' => false
+  // Do not copy files from the page's content folder
+  'staticbuilder.withfiles' => false
 ]);
 ```
 
@@ -103,14 +103,14 @@ A list of static files or folders to copy in the `static` directory.
 
 ```php
 c::set('staticbuilder.assets', [
-    // Copy the full 'assets' folder
-    'assets',
-    // Thumbs too
-    'thumbs',
-    // Use key=>value syntax to change the destination
-    'assets/images/favicon.ico' => 'favicon.ico',
-    // Getting a file from outside the main project dir
-    '../server/static-htaccess.conf' => '.htaccess'
+  // Copy the full 'assets' folder
+  'assets',
+  // Thumbs too
+  'thumbs',
+  // Use key=>value syntax to change the destination
+  'assets/images/favicon.ico' => 'favicon.ico',
+  // Getting a file from outside the main project dir
+  '../server/static-htaccess.conf' => '.htaccess'
 ]);
 ```
 
@@ -126,13 +126,13 @@ This example filters out pages that do not match the specified template names:
 
 ```php
 c::set('staticbuilder.filter', function($page){
-    $template = $page->intendedTemplate();
-    $allowed = ['page', 'post', 'blog', 'error', 'home'];
-    if (in_array($template, $allowed)) {
-        return true;
-    } else {
-        return [false, "Template '$template' excluded from static build"];
-    }
+  $template = $page->intendedTemplate();
+  $allowed = ['page', 'post', 'blog', 'error', 'home'];
+  if (in_array($template, $allowed)) {
+    return true;
+  } else {
+    return [false, "Template '$template' excluded from static build"];
+  }
 });
 ```
 
@@ -140,12 +140,12 @@ The default filter excludes folders that don’t have a text file, and folders t
 
 ```php
 c::set('staticbuilder.filter', function($page) {
-    // Check our custom logic for articles
-    if ($page->intendedTemplate() == 'article' && !$page->isPublished()) {
-        return [false, 'Unpublished articles are excluded from static build'];
-    }
-    // And fall back to the default logic for other pages
-    return KirbyStaticBuilder\Plugin::defaultFilter($page);
+  // Check our custom logic for articles
+  if ($page->intendedTemplate() == 'article' && !$page->isPublished()) {
+    return [false, 'Unpublished articles are excluded from static build'];
+  }
+  // And fall back to the default logic for other pages
+  return fvsch\KirbyStaticBuilder\Plugin::defaultFilter($page);
 });
 ```
 
@@ -166,8 +166,8 @@ You can also specify a filter function to specify which files should get copied 
 
 ```php
 c::set('staticbuilder.withfiles', function($file) {
-    // Only copy page files smaller than 250kB
-    return $file->size() < 256000;
+  // Only copy page files smaller than 250kB
+  return $file->size() < 256000;
 });
 ```
 

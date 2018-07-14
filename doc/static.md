@@ -12,7 +12,7 @@ From your templates and controllers, you can look for the `STATIC_BUILD` constan
 
 ```php
 if (defined('STATIC_BUILD')) {
-    echo 'Yup, we are making a static build of this page.';
+  echo 'Yup, we are making a static build of this page.';
 }
 ```
 
@@ -84,7 +84,7 @@ For instance you may have this code in your template:
 // site/templates/article.php
 
 if ($page->isInvisible()) {
-    go($page->parent()->url());
+  go($page->parent()->url());
 }
 ```
 
@@ -92,14 +92,14 @@ The problem is that this code *will* be executed when building the pages’ HTML
 
 One solution is to tell StaticBuilder to ignore this kind of page, for instance:
 
-```
+```php
 // site/config/config.localhost.php
 
 c::set('staticbuilder.filter', function($page) {
-    if ($page->template() == 'article' && $page->isInvisible()) {
-        return false;
-    }
-    return KirbyStaticBuilder\Plugin::defaultFilter($page);
+  if ($page->template() == 'article' && $page->isInvisible()) {
+    return false;
+  }
+  return fvsch\KirbyStaticBuilder\Plugin::defaultFilter($page);
 });
 ```
 
@@ -111,12 +111,12 @@ Another solution is to move all your code that sends HTTP headers to Kirby’s `
 // site/config/config.php
 
 c::set('headers', [
-    // Template name
-    'article' => function($page) {
-        if ($page->isInvisible()) {
-            go($page->parent()->url());
-        }
+  // Template name
+  'article' => function($page) {
+    if ($page->isInvisible()) {
+      go($page->parent()->url());
     }
+  }
 ]);
 ```
 

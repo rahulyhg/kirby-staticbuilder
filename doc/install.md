@@ -84,7 +84,7 @@ c::set('staticbuilder', true);
 // StaticBuilder requires Kirby’s cache to be disabled
 c::set('cache', false);
 // Enable routes for the StaticBuilder plugin
-KirbyStaticBuilder\Plugin::register();
+fvsch\KirbyStaticBuilder\Plugin::register();
 ```
 
 

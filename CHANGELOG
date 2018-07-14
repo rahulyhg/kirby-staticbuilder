@@ -1,0 +1,58 @@
+# Kirby StaticBuilder Changelog
+
+## 3.0.0
+
+BREAKING:
+
+- Namespace changed from `Kirby\StaticBuilder` to `fvsch\KirbyStaticBuilder` to make it clear that this plugin is not affiliated to Kirby’s team.
+- Class `Kirby\StaticBuilder\Controller` renamed to `fvsch\KirbyStaticBuilder\Plugin`
+- Configuration: default URL strategy is now to use relative URLs ('./')
+- Configuration: `outputdir` can now be any *relative* path; some basic checks are in place to avoid overwriting Kirby's standard folders, but please be careful if changing this option!
+- Configuration: default page extension is now '/index.html' (writing a page at '[outputdir]/page/url/index.html')
+
+Bugfixes:
+- Fixes #24, probably (catching PHP errors happening while building a page).
+
+## 2.1.1
+
+- Fix #35: Since Kirby 2.5.6, helpers such as the `url()`, `js()` and `css()` functions would not respect the `staticbuilder.baseurl` and could output URLs like `http://localhost/…` instead. 
+
+## 2.1.0
+
+Some improvements to page filtering (excluding pages from the static build):
+
+- The default filter now shows the reason why a page was excluded, rather than a generic "Excluded by filter" message.
+- Updated docs on how to provide such a message in custom filter functions.
+- Fixed the default filter for pages without a content file, which was unreliable on multilang sites where not all pages are translated.
+
+## 2.0.2
+
+- Use configured prefix for excluding module pages.
+
+## 2.0.1
+
+- Fix composer autoloading!
+
+## 2.0.0
+
+Composer install, config fixes.
+
+Important: the option names have changed in this release!
+
+BREAKING:
+- The main option for activating the plugin is just `c::set('staticbuilder', true);`.
+- Other options have been renamed from `'plugin.staticbuilder.*'` to `'staticbuilder.*'`.
+- Renamed options: `filename`->`extension`, `pagefiles`->`withfiles`.
+- The namespace was changed from `Kirby\Plugin\StaticBuilder` to `Kirby\StaticBuilder`.
+
+New:
+- This plugin can now be installed with Composer, yay \o/
+- Kirby Modules folders are excluded by default (since they’re not pages).
+- When filtering which pages should be build (using the `'staticbuilder.filter'` option), you can use this method to reuse the plugin’s default filter (which excludes empty directories and directories containing modules only): `Kirby\StaticBuilder\Builder::defaultFilter($page)`.
+- It’s now possible to filter which page files (files from the page’s folder) should be copied over, when using the related option.
+- The `STATIC_BUILD` constant can be used to determine if we’re executing a controller or template from StaticBuilder. If StaticBuilder is building this page, this constant will be defined.
+- Bug fixes :D
+
+## 1.1.4
+
+- Leaner download

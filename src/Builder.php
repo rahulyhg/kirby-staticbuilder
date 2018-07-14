@@ -1,6 +1,6 @@
 <?php
 
-namespace KirbyStaticBuilder;
+namespace fvsch\KirbyStaticBuilder;
 
 use A;
 use C;
@@ -41,6 +41,9 @@ class Builder
     protected $filter;
     protected $uglyurls;
     protected $withfiles;
+
+    // Runtime config
+    public $logbody;
 
     // Callable for PHP Errors
     public $shutdown;
@@ -117,8 +120,10 @@ class Builder
 
     /**
      * Build or rebuild static content
-     * @param Page|Pages|Site $content Content to write to the static folder
-     * @param boolean $write Should we actually write files
+     * @param Page|Pages|Site $content
+     *   Content to write to the static folder
+     * @param boolean $write
+     *   Should we actually write files
      * @throws Exception
      */
     public function buildStatic($content, $write=false)
@@ -220,7 +225,8 @@ class Builder
     /**
      * Normalize a file path string to remove ".." etc.
      * @param string $path
-     * @param string $sep Path separator to use in output
+     * @param string $sep
+     *   Path separator to use in output
      * @return string
      */
     protected function normalizePath($path, $sep='/')
@@ -318,8 +324,10 @@ class Builder
 
     /**
      * Rewrites URLs in the response body of a page
-     * @param string $text Response text
-     * @param string $pageUrl URL for the page
+     * @param string $text
+     *   Response text
+     * @param string $pageUrl
+     *   URL for the page
      * @return string
      */
     protected function rewriteUrls($text, $pageUrl)
@@ -411,7 +419,8 @@ class Builder
     /**
      * Write the HTML for a page and copy its files
      * @param Page $page
-     * @param bool $write Should we write files or just report info (dry-run).
+     * @param bool $write
+     *   Should we write files or just report info (dry-run).
      */
     protected function buildPage(Page $page, $write=false)
     {
@@ -433,7 +442,8 @@ class Builder
                 'status' => 'ignore',
                 'reason' => A::get($filterResult, 1, 'Excluded by filter'),
                 'dest'   => null,
-                'size'   => null
+                'size'   => null,
+                'body'   => null
             ];
             $this->summary[] = $log;
             return;
@@ -448,8 +458,10 @@ class Builder
     /**
      * Write the HTML for a page’s language version
      * @param Page $page
-     * @param string $lang Page language code
-     * @param bool $write Should we write files or just report info (dry-run).
+     * @param string $lang
+     *   Page language code
+     * @param bool $write
+     *   Should we write files or just report info (dry-run).
      * @return array
      */
     protected function buildPageVersion(Page $page, $lang=null, $write=false)
@@ -470,10 +482,12 @@ class Builder
 
         $log = [
             'type'   => 'page',
-            'status' => '',
             'source' => $source,
+            'status' => '',
+            'reason' => null,
             'dest'   => null,
             'size'   => null,
+            'body'   => null,
             'title'  => $page->title()->value,
             'uri'    => $page->uri(),
             'files'  => []
@@ -504,6 +518,9 @@ class Builder
                 $outdated = filemtime($file) < $page->modified();
                 $log['status'] = $outdated ? 'outdated' : 'uptodate';
                 $log['size'] = filesize($file);
+                if ($this->logbody === true) {
+                    $log['body'] = file_get_contents($file);
+                }
             }
             else {
                 $log['status'] = 'missing';
@@ -521,10 +538,13 @@ class Builder
             $log['dest'] = $e->getMessage();
             return $this->summary[] = $log;
         }
-        $text = $this->rewriteUrls($text, $page->url($lang));
-        F::write($file, $text);
-        $log['size'] = strlen($text);
+        $body = $this->rewriteUrls($text, $page->url($lang));
+        F::write($file, $body);
+        $log['size'] = strlen($body);
         $log['status'] = 'generated';
+        if ($this->logbody === true) {
+            $log['body'] = $body;
+        }
         header_remove();
 
         // Option: Copy page files in a folder
@@ -550,9 +570,12 @@ class Builder
      * This function is responsible for normalizing paths and making sure
      * we don't write files outside of the static directory.
      *
-     * @param string $from Source file or folder
-     * @param string $to Destination path
-     * @param bool $write Should we write files or just report info (dry-run).
+     * @param string $from
+     *   Source file or folder
+     * @param string $to
+     *   Destination path
+     * @param bool $write
+     *   Should we write files or just report info (dry-run).
      * @return array|boolean
      * @throws Exception
      */
@@ -618,7 +641,8 @@ class Builder
 
     /**
      * Get a collection of pages to work with (collection may be empty)
-     * @param Page|Pages|Site $content Content to write to the static folder
+     * @param Page|Pages|Site $content
+     *   Content to write to the static folder
      * @return Pages
      */
     protected function getPages($content)

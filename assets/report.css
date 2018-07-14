@@ -19,6 +19,13 @@ a {
 a:hover, a:focus {
   text-decoration: underline;
 }
+code, pre {
+  font-family: monospace, monospace;
+  font-size: 100%;
+}
+pre {
+  white-space: pre-wrap;
+}
 header {
   margin: 15px 0 35px;
 }
@@ -174,8 +181,7 @@ button.header-btn:focus {
   min-width: 60px;
 }
 .results code {
-  font-family: monospace, monospace;
-  font-size: 85%;
+  font-size: 100%;
 }
 .results em {
   font-size: 90%;
@@ -217,7 +223,23 @@ button.header-btn:focus {
 .results .hideIgnore .ignore-header button span + span {
   display: none;
 }
-
+.results .result-body[hidden] {
+  display: none;
+}
+aside {
+  margin-top: 2em;
+}
+aside h2 {
+  margin-bottom: 1em;
+}
+aside pre {
+  margin: 0;
+  padding: 10px;
+  color: #ccc;
+  background: #333;
+  white-space: pre-wrap;
+  tab-size: 2;
+}
 
 @media (max-width:799px) {
   body {
@@ -232,6 +254,9 @@ button.header-btn:focus {
   }
   .header-col--side a {
     order: 2;
+  }
+  aside pre {
+    margin: 0 -20px -20px;
   }
 }
 @media (min-width:800px) {

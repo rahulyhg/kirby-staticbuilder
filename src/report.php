@@ -63,15 +63,17 @@ function showFiles($files) {
  * Templating function to render a log entry as a table row
  * @param array $info
  * @param string $base
+ * @param int $pagesCount
  * @return string
  */
-function makeRow($info, $base) {
+function makeRow($info, $base, $pagesCount) {
     $cols   = [];
     $type   = A::get($info, 'type', '');
     $source = A::get($info, 'source', '');
     $dest   = A::get($info, 'dest', '');
     $status = A::get($info, 'status', '');
     $reason = A::get($info, 'reason', '');
+    $body   = A::get($info, 'body', '');
     $title  = A::get($info, 'title', '');
     $uri    = A::get($info, 'uri', '');
     $size   = A::get($info, 'size', '');
@@ -91,26 +93,32 @@ function makeRow($info, $base) {
         $cols[$sKey] = "<code>[$type] $source</code>";
     }
 
-    // Destination column
+    // Destination and status column
     if ($status == 'ignore') {
         $cols['ignore'] = "<em>$reason</em>";
     }
     else {
-        $cols['dest'] = "<code>$dest</code>" . showFiles($files);
+        $dest_html = "<code>$dest</code>" . showFiles($files);
+        if (is_int($size)) $dest_html .= ' ('.F::niceSize($size).')';
+        $cols['dest'] = $dest_html;
         // Status column
         $cols['status'] = statusText($status);
-        if (is_int($size)) {
-            $cols['status'] .= '<br><code>'.F::niceSize($size).'</code>';
-        }
     }
 
     // Make the HTML
-    $html = '';
+    $cols_html = '';
     foreach ($cols as $key=>$content) {
         $colspan = $key === 'ignore' ? ' colspan="2"' : '';
-        $html .= "<td class=\"$key\"$colspan>$content</td>\n";
+        $cols_html .= "<td class=\"$key\"$colspan>$content</td>\n";
     }
-    return "<tr class=\"$type $status\">\n$html</tr>\n";
+    $html = "<tr class=\"$type $status\">\n$cols_html</tr>\n";
+    if ($body !== '') {
+        $body_esc = htmlspecialchars($body, ENT_NOQUOTES);
+        $hidden_attr = $pagesCount > 1 ? ' hidden' : '';
+        $html .= "<tr class=\"result-body\"$hidden_attr><td colspan=\"3\"><pre>$body_esc</pre></td></tr>\n";
+    }
+
+    return $html;
 }
 
 ?>
@@ -197,7 +205,7 @@ function makeRow($info, $base) {
         </thead>
         <tbody>
         <?php foreach(array_merge($assets['main'], $assets['ignore']) as $item) {
-            echo makeRow($item, $base);
+            echo makeRow($item, $base, $pagesCount);
         } ?>
         </tbody>
     </table>
@@ -218,7 +226,7 @@ function makeRow($info, $base) {
         </thead>
         <tbody>
         <?php foreach(array_merge($pages['main'], $pages['ignore']) as $item) {
-            echo makeRow($item, $base);
+            echo makeRow($item, $base, $pagesCount);
         } ?>
         </tbody>
     </table>

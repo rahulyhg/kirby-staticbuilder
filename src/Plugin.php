@@ -1,6 +1,6 @@
 <?php
 
-namespace KirbyStaticBuilder;
+namespace fvsch\KirbyStaticBuilder;
 
 use C;
 use Exception;
@@ -30,12 +30,12 @@ class Plugin
         $kirby = kirby();
         $kirby->set('route', [
             'pattern' => 'staticbuilder',
-            'action' => 'KirbyStaticBuilder\\Plugin::siteAction',
+            'action' => 'fvsch\\KirbyStaticBuilder\\Plugin::siteAction',
             'method' => 'GET|POST'
         ]);
         $kirby->set('route', [
             'pattern' => 'staticbuilder/(:all)',
-            'action' => 'KirbyStaticBuilder\\Plugin::pageAction',
+            'action' => 'fvsch\\KirbyStaticBuilder\\Plugin::pageAction',
             'method' => 'GET|POST'
         ]);
         static::$registered = true;
@@ -97,6 +97,7 @@ class Plugin
         $write = R::is('POST') and R::get('confirm');
         $page = page($uri);
         $builder = new Builder();
+        $builder->logbody = true;
         $data = [
             'mode' => 'page',
             'error' => false,
@@ -112,7 +113,11 @@ class Plugin
             $data['summary'] = $builder->summary;
         }
         catch (Exception $e) {
-
+            $data['mode'] = 'fatal';
+            $data['error'] = 'Build error';
+            $data['errorTitle'] = 'Error while building static page';
+            $data['errorDetails'] = $e->getMessage();
+            $data['summary'] = $builder->summary;
         }
         return $builder->htmlReport($data);
     }
